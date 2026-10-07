@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { getProduct } from "@/lib/api";
+import AddToCartButton from "@/components/AddToCartButton";
 import {
   arrowOf,
   changeLabel,
@@ -99,6 +100,18 @@ export default async function ProductDetailsPage({ params }) {
                 {toBn(markets.length)} টি বাজার
               </span>
             </div>
+
+            <AddToCartButton
+              product={{
+                id: product.id,
+                slug: product.slug,
+                nameBn: product.nameBn,
+                image: product.image,
+                categoryNameBn: product.categoryNameBn,
+                unit: product.unit,
+                today: product.today,
+              }}
+            />
           </div>
 
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center sm:min-w-[170px]">

@@ -4,6 +4,7 @@ import { Toaster } from "react-hot-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PriceTicker from "@/components/PriceTicker";
+import { CartProvider } from "@/lib/cart-context";
 import { getCategories } from "@/lib/api";
 import { auth } from "@/lib/auth";
 import { bnDate } from "@/lib/format";
@@ -55,14 +56,16 @@ export default async function RootLayout({ children }) {
           }}
         />
 
-        <Navbar categories={categories} user={user} today={bnDate()} />
-        <PriceTicker />
+        <CartProvider>
+          <Navbar categories={categories} user={user} today={bnDate()} />
+          <PriceTicker />
 
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:py-8">
-          {children}
-        </main>
+          <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:py-8">
+            {children}
+          </main>
 
-        <Footer />
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );
