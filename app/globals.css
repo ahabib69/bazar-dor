@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-hind-siliguri), ui-sans-serif, system-ui, "Segoe UI",
+    sans-serif;
+}
+
+@theme {
+  /* main green */
+  --color-brand-50: #f1f7f3;
+  --color-brand-100: #dcefe2;
+  --color-brand-200: #bcdec6;
+  --color-brand-300: #8fc5a0;
+  --color-brand-400: #5da57a;
+  --color-brand-500: #3d8a5d;
+  --color-brand-600: #2e714b;
+  --color-brand-700: #26593d;
+  --color-brand-800: #204832;
+  --color-brand-900: #1b3b2a;
+
+  /* warm accent */
+  --color-accent-50: #fdf7ec;
+  --color-accent-100: #faeacb;
+  --color-accent-200: #f3d29a;
+  --color-accent-400: #e0a44f;
+  --color-accent-500: #cf8a26;
+  --color-accent-600: #ac6d13;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #f7f9f7;
+}
+
+/* price ticker under the navbar */
+.marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 45s linear infinite;
+}
+
+.marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* category strip in the navbar should not show a scrollbar */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    animation: none;
+  }
+}

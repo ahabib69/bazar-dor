@@ -1,0 +1,21 @@
+{
+  "name": "bazar-dor",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@better-auth/mongo-adapter": "^1.7.7",
+    "@tailwindcss/postcss": "^4.3.3",
+    "better-auth": "^1.7.7",
+    "mongodb": "^7.7.0",
+    "next": "^16.4.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-hot-toast": "^2.6.1",
+    "tailwindcss": "^4.3.3"
+  }
+}
