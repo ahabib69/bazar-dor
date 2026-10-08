@@ -48,13 +48,18 @@ export default function SignInForm({ callbackUrl = "" }) {
 
   async function handleGoogleLogin() {
     setGoogleLoading(true);
-    const { error } = await authClient.signIn.social({
-      provider: "google",
-      callbackURL: callbackUrl || "/",
-    });
+    try {
+      const { error } = await authClient.signIn.social({
+        provider: "google",
+        callbackURL: callbackUrl || "/",
+      });
 
-    if (error) {
+      if (error) {
+        toast.error(error.message || "গুগল দিয়ে সাইন ইন করা যায়নি");
+      }
+    } catch {
       toast.error("গুগল দিয়ে সাইন ইন করা যায়নি");
+    } finally {
       setGoogleLoading(false);
     }
   }
@@ -111,6 +116,7 @@ export default function SignInForm({ callbackUrl = "" }) {
       </div>
 
       <button
+        type="button"
         onClick={handleGoogleLogin}
         disabled={googleLoading}
         className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-70"
@@ -133,7 +139,7 @@ export default function SignInForm({ callbackUrl = "" }) {
             d="M24 47.5c6.2 0 11.5-2 15.3-5.6l-7.6-5.9c-2.1 1.4-4.8 2.3-7.7 2.3-6.3 0-11.7-4.5-13.6-10.4l-7.8 6.1C6.5 42.1 14.6 47.5 24 47.5z"
           />
         </svg>
-        {googleLoading ? "অপেক্ষা করুন..." : "গুগল দিয়ে সাইন ইন"}
+        {googleLoading ? "অপেক্ষা করুন..." : "Continue with Google"}
       </button>
 
       <p className="mt-5 text-center text-sm text-slate-500">
