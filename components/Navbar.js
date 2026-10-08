@@ -21,15 +21,26 @@ export default function Navbar({ categories = [], user = null, today = "" }) {
     setDropdownOpen(false);
   }, [pathname]);
 
+  // close the dropdown on outside click or Escape
   useEffect(() => {
     function handleClickOutside(event) {
       if (!event.target.closest("#user-menu")) {
         setDropdownOpen(false);
       }
     }
+    function handleKey(event) {
+      if (event.key === "Escape") {
+        setDropdownOpen(false);
+        setMenuOpen(false);
+      }
+    }
 
     document.addEventListener("click", handleClickOutside);
-    return () => document.removeEventListener("click", handleClickOutside);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("keydown", handleKey);
+    };
   }, []);
 
   async function handleSignOut() {
@@ -41,20 +52,22 @@ export default function Navbar({ categories = [], user = null, today = "" }) {
     router.refresh();
   }
 
-  function linkClass(isActive) {
+  function pillClass(isActive) {
     if (isActive) {
-      return "rounded-md bg-brand-100 px-3 py-1.5 text-sm font-medium text-brand-800";
+      return "whitespace-nowrap rounded-full bg-brand-700 px-4 py-1.5 text-sm font-medium text-white shadow-sm";
     }
-    return "rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900";
+    return "whitespace-nowrap rounded-full bg-white px-4 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-slate-200 transition hover:text-brand-800 hover:ring-brand-300";
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white">
+    <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-2xl">🛒</span>
+        <Link href="/" className="group flex items-center gap-3">
+          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-600 to-brand-800 text-xl shadow-sm transition duration-300 group-hover:-rotate-6 group-hover:scale-105">
+            🛒
+          </span>
           <span>
-            <span className="block text-lg font-bold leading-tight text-brand-800">
+            <span className="block text-lg font-extrabold leading-tight tracking-tight text-brand-800">
               বাজার দর
             </span>
             <span className="block text-[11px] text-slate-500">{today}</span>
@@ -64,7 +77,7 @@ export default function Navbar({ categories = [], user = null, today = "" }) {
         <div className="flex items-center gap-2">
           <Link
             href="/cart"
-            className="relative flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="relative flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-brand-300 hover:bg-brand-50"
           >
             <span className="text-base">🛒</span>
             <span className="hidden sm:inline">কার্ট</span>
@@ -80,14 +93,15 @@ export default function Navbar({ categories = [], user = null, today = "" }) {
               <div id="user-menu" className="relative">
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-2 rounded-full border border-slate-200 py-1 pl-1 pr-3 hover:bg-slate-50"
+                  aria-expanded={dropdownOpen}
+                  className="flex items-center gap-2 rounded-full border border-slate-200 bg-white py-1 pl-1 pr-3 transition hover:border-brand-300 hover:bg-brand-50"
                 >
                   {user.image ? (
                     // user photo can be any url, so a normal img is easier here
                     <img
                       src={user.image}
                       alt={user.name}
-                      className="h-8 w-8 rounded-full object-cover"
+                      className="h-8 w-8 rounded-full object-cover ring-2 ring-brand-100"
                     />
                   ) : (
                     <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-600 text-sm font-semibold text-white">
@@ -98,7 +112,9 @@ export default function Navbar({ categories = [], user = null, today = "" }) {
                     {user.name}
                   </span>
                   <svg
-                    className="h-4 w-4 text-slate-400"
+                    className={`h-4 w-4 text-slate-400 transition ${
+                      dropdownOpen ? "rotate-180" : ""
+                    }`}
                     viewBox="0 0 20 20"
                     fill="none"
                     stroke="currentColor"
@@ -109,89 +125,85 @@ export default function Navbar({ categories = [], user = null, today = "" }) {
                 </button>
 
                 {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-52 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
-                    <div className="border-b border-slate-100 px-3 py-2">
-                      <p className="truncate text-sm font-medium text-slate-800">
+                  <div className="absolute right-0 mt-2 w-60 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+                    <div className="border-b border-slate-100 bg-brand-50/70 px-4 py-3">
+                      <p className="truncate text-sm font-semibold text-slate-800">
                         {user.name}
                       </p>
                       <p className="truncate text-xs text-slate-500">{user.email}</p>
+                    </div>
+                    <Link
+                      href="/profile"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
+                    >
+                      <span>👤</span> আমার প্রোফাইল
+                    </Link>
+                    <Link
+                      href="/profile/update"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
+                    >
+                      <span>✏️</span> তথ্য আপডেট করুন
+                    </Link>
+                    <button
+                      onClick={handleSignOut}
+                      className="flex w-full items-center gap-2 border-t border-slate-100 px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50"
+                    >
+                      <span>🚪</span> সাইন আউট
+                    </button>
                   </div>
-                  <Link
-                    href="/profile"
-                    className="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
-                  >
-                    আমার প্রোফাইল
-                  </Link>
-                  <Link
-                    href="/profile/update"
-                    className="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
-                  >
-                    তথ্য আপডেট করুন
-                  </Link>
-                  <button
-                    onClick={handleSignOut}
-                    className="block w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
-                  >
-                    সাইন আউট
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <>
-              <Link
-                href="/signin"
-                className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-              >
-                সাইন ইন
-              </Link>
-              <Link
-                href="/signup"
-                className="rounded-lg bg-brand-700 px-4 py-2 text-sm font-medium text-white hover:bg-brand-800"
-              >
-                সাইন আপ
-              </Link>
-            </>
-          )}
-          </div>
-        </div>
-
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="rounded-lg border border-slate-200 p-2 text-slate-600 sm:hidden"
-          aria-label="মেনু"
-        >
-          <svg
-            className="h-5 w-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-          >
-            {menuOpen ? (
-              <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+                )}
+              </div>
             ) : (
-              <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
+              <>
+                <Link
+                  href="/signin"
+                  className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-brand-300 hover:bg-brand-50"
+                >
+                  সাইন ইন
+                </Link>
+                <Link
+                  href="/signup"
+                  className="rounded-xl bg-brand-700 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-brand-800"
+                >
+                  সাইন আপ
+                </Link>
+              </>
             )}
-          </svg>
-        </button>
+          </div>
+
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="rounded-xl border border-slate-200 p-2 text-slate-600 sm:hidden"
+            aria-label="মেনু"
+            aria-expanded={menuOpen}
+          >
+            <svg
+              className="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+            >
+              {menuOpen ? (
+                <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+              ) : (
+                <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
+              )}
+            </svg>
+          </button>
+        </div>
       </div>
 
       <nav className="border-t border-slate-100 bg-brand-50/70">
-        <div className="no-scrollbar mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-4 py-2">
-          <Link
-            href="/"
-            className={`whitespace-nowrap ${linkClass(pathname === "/")}`}
-          >
+        <div className="no-scrollbar mx-auto flex max-w-6xl items-center gap-2 overflow-x-auto px-4 py-2.5">
+          <Link href="/" className={pillClass(pathname === "/")}>
             সব পণ্য
           </Link>
           {categories.map((category) => (
             <Link
               key={category.slug}
               href={`/category/${category.slug}`}
-              className={`whitespace-nowrap ${linkClass(
-                pathname === `/category/${category.slug}`
-              )}`}
+              className={pillClass(pathname === `/category/${category.slug}`)}
             >
               <span className="mr-1">{category.icon}</span>
               {category.nameBn}
@@ -204,7 +216,7 @@ export default function Navbar({ categories = [], user = null, today = "" }) {
         <div className="border-t border-slate-100 bg-white px-4 py-3 sm:hidden">
           <Link
             href="/cart"
-            className="mb-2 flex items-center justify-between rounded-md bg-brand-50 px-3 py-2 text-sm font-medium text-brand-800"
+            className="mb-2 flex items-center justify-between rounded-xl bg-brand-50 px-3 py-2.5 text-sm font-medium text-brand-800"
           >
             <span>🛒 কার্ট</span>
             <span>{toBn(cartCount)} টি</span>
@@ -212,37 +224,37 @@ export default function Navbar({ categories = [], user = null, today = "" }) {
 
           {user ? (
             <div className="space-y-1">
-              <p className="pb-1 text-sm text-slate-500">{user.email}</p>
+              <p className="px-3 pb-1 text-sm text-slate-500">{user.email}</p>
               <Link
                 href="/profile"
-                className="block rounded-md px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                className="block rounded-xl px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
               >
-                আমার প্রোফাইল
+                👤 আমার প্রোফাইল
               </Link>
               <Link
                 href="/profile/update"
-                className="block rounded-md px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                className="block rounded-xl px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
               >
-                তথ্য আপডেট করুন
+                ✏️ তথ্য আপডেট করুন
               </Link>
               <button
                 onClick={handleSignOut}
-                className="block w-full rounded-md px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                className="block w-full rounded-xl px-3 py-2.5 text-left text-sm text-red-600 hover:bg-red-50"
               >
-                সাইন আউট
+                🚪 সাইন আউট
               </button>
             </div>
           ) : (
             <div className="flex gap-2">
               <Link
                 href="/signin"
-                className="flex-1 rounded-lg border border-slate-200 px-4 py-2 text-center text-sm font-medium text-slate-700"
+                className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-center text-sm font-medium text-slate-700"
               >
                 সাইন ইন
               </Link>
               <Link
                 href="/signup"
-                className="flex-1 rounded-lg bg-brand-700 px-4 py-2 text-center text-sm font-medium text-white"
+                className="flex-1 rounded-xl bg-brand-700 px-4 py-2.5 text-center text-sm font-medium text-white"
               >
                 সাইন আপ
               </Link>
